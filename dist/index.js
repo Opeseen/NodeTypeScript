@@ -16,11 +16,11 @@ const app = (0, express_1.default)();
 app.get('/', (req, res) => {
     res.send('Hello World');
 });
+function sayHello(name) {
+    // return `Hello ${name}`;
+    console.log(`Hello ${name}`);
+}
+sayHello(1);
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
-// function sayHello(name: string) {
-//   // return `Hello ${name}`;
-//   console.log(`Hello ${name}`);
-// }
-// sayHello("Dylan");
