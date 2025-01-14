@@ -1,26 +1,23 @@
-// import express, {Express, request, Request, Response} from 'express';
-const express = require('express')
-// import path from 'path';
-const path = require('path')
-const multer = require('multer');
+import {
+  PutObjectCommand,
+  S3Client,
+  S3ServiceException,
+} from "@aws-sdk/client-s3";
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/images/upload')
-  },
-  filename: (req, file, cb) => {
-    const fileExtension = file.mimetype.split('/')[1];
-    cb(null, `user-${Date.now()}.${fileExtension}`);
-  }
-});
+import express from 'express';
+import multer from 'multer';
+import sharp from "sharp";
 
+const port = 3000;
+const app = express()
+const client = new S3Client({})
 const storage = multer.memoryStorage()
 
 const fileFilter = (req, file, cb) => {
   if(file.mimetype.startsWith('image')){
     cb(null, true)
   }else{
-    cb(null, false)
+    cb(new Error('Error Occurred'),false)
   }
 };
 
@@ -29,17 +26,38 @@ const upload = multer({
   fileFilter: fileFilter
 })
 
-const port = 3000;
-// const app: Express = express();
-const app = express()
-
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
-
 app.post('/uploadPhoto', upload.single('photo'), async (req, res, next) => {
-  console.log(req.file)
-  console.log(req.body)
+  // Resizing Image
+  const imageFileBuffer = await sharp(req.file.buffer)
+  .resize(300, 300)
+  .toFormat('jpeg')
+  .jpeg({ quality: 90 })
+  .toBuffer();
+
+  console.log(imageFileBuffer)
+  const s3BucketName = 'vcb-static-files';
+  const fileExtension = '.jpeg';
+  const imageName = `user-${Date.now()}${fileExtension}`
+  const s3BucketKey = `vcb-upload/${imageName}`;
+  const region = 'us-east-1';
+  
+  const input = {
+    Bucket: s3BucketName,
+    Key: s3BucketKey,
+    Body: imageFileBuffer,
+    ContentType: req.file.mimetype,
+  }
+
+  const command = new PutObjectCommand(input);
+  try {
+    const response = await client.send(command);
+    const s3ObjectURL = `https://${s3BucketName}.s3.${region}.amazonaws.com/${s3BucketKey}`;
+    console.log(s3ObjectURL);
+    console.log(response);
+  } catch (err) {
+    console.log(err);
+
+  }
   res.send('Done')
 });
 
