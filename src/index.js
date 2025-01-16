@@ -26,6 +26,10 @@ const upload = multer({
   fileFilter: fileFilter
 })
 
+app.get('/', async (req, res) =< {
+  res.send("Hello World")
+})
+
 app.post('/uploadPhoto', upload.single('photo'), async (req, res, next) => {
   // Resizing Image
   const imageFileBuffer = await sharp(req.file.buffer)
