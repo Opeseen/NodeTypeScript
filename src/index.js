@@ -10,7 +10,7 @@ import sharp from "sharp";
 
 const port = 3000;
 const app = express()
-const client = new S3Client({})
+const client = new S3Client({region: "us-east-1"})
 const storage = multer.memoryStorage()
 
 const fileFilter = (req, file, cb) => {
