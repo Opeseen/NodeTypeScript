@@ -58,11 +58,11 @@ app.post('/uploadPhoto', upload.single('photo'), async (req, res, next) => {
     const s3ObjectURL = `https://${s3BucketName}.s3.${region}.amazonaws.com/${s3BucketKey}`;
     console.log(s3ObjectURL);
     console.log(response);
+    res.json({s3BucketKey, s3ObjectURL})
   } catch (err) {
     console.log(err);
 
   }
-  res.send('Done')
 });
 
 app.listen(port, () => {
