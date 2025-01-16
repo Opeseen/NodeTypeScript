@@ -34,7 +34,7 @@ app.post('/uploadPhoto', upload.single('photo'), async (req, res, next) => {
   .jpeg({ quality: 90 })
   .toBuffer();
 
-  console.log(req.file)
+  console.log(req.body.name)
   const s3BucketName = 'vcb-static-files';
   const fileExtension = '.jpeg';
   const imageName = `user-${Date.now()}${fileExtension}`
@@ -53,7 +53,7 @@ app.post('/uploadPhoto', upload.single('photo'), async (req, res, next) => {
     const response = await client.send(command);
     const s3ObjectURL = `https://${s3BucketName}.s3.${region}.amazonaws.com/${s3BucketKey}`;
     console.log(s3ObjectURL);
-    console.log(response.$metadata.httpStatusCode);
+    console.log(response);
   } catch (err) {
     console.log(err);
 
