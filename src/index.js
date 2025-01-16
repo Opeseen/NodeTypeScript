@@ -26,7 +26,7 @@ const upload = multer({
   fileFilter: fileFilter
 })
 
-app.get('/', async (req, res) =< {
+app.get('/', async (req, res) => {
   res.send("Hello World")
 })
 
